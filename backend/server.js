@@ -1,2 +1,80 @@
-// RentEase Backend Server
-// Entry point for the application
+
+require("dotenv").config();
+
+console.log("Starting backend server...");
+
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+
+const authRoutes = require("./routes/authRoutes");
+
+const fs = require("fs");
+const path = require("path");
+
+
+
+// express app
+const app = express();
+
+// Allow requests from your frontend and include cookies
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    credentials: true,
+  })
+);
+
+// middleware
+app.use(express.json()); // to parse JSON data
+app.use((req, res, next) => {
+  console.log(req.path, req.method);
+  next();
+});
+
+// Session middleware (required for session-based auth)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: "sessions",
+    }),
+    cookie: {
+      secure: false, // Set to false for local development
+      httpOnly: true,
+      maxAge: 86400000,
+    },
+  })
+);
+
+// Ensure 'uploads' directory exists
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// routes
+app.use("/api/auth", authRoutes);
+
+
+// Connect to MongoDB and start the server
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    const PORT = process.env.PORT || 4000;
+    app.listen(PORT, () => {
+      console.log(`Connected to db & Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
+
