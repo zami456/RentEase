@@ -6,6 +6,8 @@ import API_BASE_URL from "./config/api";
 import Home from "./pages/home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Login from "./pages/Login";
+
 
 function AppRoutes({ user, setUser }) {
   const location = useLocation();
@@ -17,6 +19,8 @@ function AppRoutes({ user, setUser }) {
       <div>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login setUser={setUser} />} />
+          {/* Add other routes here */}
   
         </Routes>
       </div>
