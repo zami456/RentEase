@@ -7,7 +7,7 @@ import Home from "./pages/home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
-
+import Register from "./pages/Register";
 
 function AppRoutes({ user, setUser }) {
   const location = useLocation();
@@ -20,6 +20,7 @@ function AppRoutes({ user, setUser }) {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="/register" element={<Register />} />
           {/* Add other routes here */}
   
         </Routes>
