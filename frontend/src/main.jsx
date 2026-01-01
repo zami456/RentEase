@@ -1,1 +1,0 @@
-// RentEase Frontend Entry Point

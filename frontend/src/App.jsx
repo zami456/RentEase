@@ -1,1 +1,0 @@
-// RentEase Frontend App Component
