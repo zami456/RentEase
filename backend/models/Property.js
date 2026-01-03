@@ -11,7 +11,7 @@ const propertySchema = new mongoose.Schema({
   price: { type: Number, required: true },
   mainImage: { type: String, required: true },
   roomImages: [{type: String}],
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User"}, //set required =True after seeding
   description: {type: String, required: true},
   createdAt: { type: Date, default: Date.now },
 });
