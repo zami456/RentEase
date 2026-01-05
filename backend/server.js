@@ -11,6 +11,7 @@ const MongoStore = require("connect-mongo");
 
 const authRoutes = require("./routes/authRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const fs = require("fs");
 const path = require("path");
@@ -65,7 +66,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
-
+app.use("/api/reviews", reviewRoutes);
 
 // Connect to MongoDB and start the server
 mongoose
