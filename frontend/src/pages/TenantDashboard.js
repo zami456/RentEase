@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import MyRentalHistory from "../components/MyRentalHistory";
+import Wishlist from "../components/wishlist";
 import API_BASE from "../config/api";
 
 const TenantDashboard = ({ user }) => {
+  const [activeTab, setActiveTab] = useState("rentalHistory");
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -19,6 +23,17 @@ const TenantDashboard = ({ user }) => {
     }
   };
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "rentalHistory":
+        return <MyRentalHistory />;
+      case "wishlist":
+        return <Wishlist user={user} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-blue-50">
       {/* Sidebar */}
@@ -27,6 +42,30 @@ const TenantDashboard = ({ user }) => {
           Dashboard
         </h2>
         <ul className="flex-1 space-y-2">
+          <li>
+            <button
+              className={`w-full text-left px-4 py-2 rounded-lg transition-colors font-medium ${
+                activeTab === "rentalHistory"
+                  ? "bg-blue-700 text-white"
+                  : "hover:bg-blue-800 text-blue-100"
+              }`}
+              onClick={() => setActiveTab("rentalHistory")}
+            >
+              Rental History
+            </button>
+          </li>
+          <li>
+            <button
+              className={`w-full text-left px-4 py-2 rounded-lg transition-colors font-medium ${
+                activeTab === "wishlist"
+                  ? "bg-blue-700 text-white"
+                  : "hover:bg-blue-800 text-blue-100"
+              }`}
+              onClick={() => setActiveTab("wishlist")}
+            >
+              Wishlist
+            </button>
+          </li>
           <li>
             <button
               className="w-full text-left px-4 py-2 rounded-lg transition-colors font-medium hover:bg-blue-800 text-blue-100"
@@ -45,9 +84,7 @@ const TenantDashboard = ({ user }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8">
-        <p className="text-blue-700">Welcome to your dashboard.</p>
-      </main>
+      <main className="flex-1 p-8">{renderContent()}</main>
     </div>
   );
 };
