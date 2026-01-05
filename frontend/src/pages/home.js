@@ -4,6 +4,7 @@ import API_BASE_URL from "../config/api";
 import PropertyCard from "../components/propertycard";
 
 
+
 const Home = () => {
   const [properties, setProperties] = useState([]);
 
