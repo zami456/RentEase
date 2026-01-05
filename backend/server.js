@@ -14,6 +14,7 @@ const propertyRoutes = require("./routes/propertyRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
 const profileRoutes = require("./routes/profile");
+const commentRoutes = require("./routes/commentRoutes");
 
 const fs = require("fs");
 const path = require("path");
@@ -71,6 +72,7 @@ app.use("/api/properties", propertyRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/comments", commentRoutes);
 
 
 // Connect to MongoDB and start the server
