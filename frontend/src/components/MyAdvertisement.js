@@ -62,7 +62,7 @@ export default function MyAdvertisement() {
             <p className="font-semibold text-blue-700">Price: {p.price}৳</p>
             <div className="mt-3 flex items-center gap-2">
               <button
-                onClick={() => navigate(`/properties/${p._id}`)}
+                onClick={() => navigate(`/property/${p._id}`)}
                 className="px-3 py-1 rounded bg-blue-600 text-white text-sm hover:bg-blue-700"
               >
                 View
