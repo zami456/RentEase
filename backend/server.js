@@ -11,6 +11,7 @@ const MongoStore = require("connect-mongo");
 
 const authRoutes = require("./routes/authRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
+const wishlistRoutes = require("./routes/wishlistRoutes");
 
 const fs = require("fs");
 const path = require("path");
