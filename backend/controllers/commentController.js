@@ -86,3 +86,29 @@ exports.deleteComment = async (req, res) => {
     res.status(500).json({ error: "Failed to delete comment" });
   }
 };
+
+exports.likeComment = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    const userId = req.session.user.id;
+    if (!comment.likes.includes(userId)) comment.likes.push(userId);
+    comment.dislikes = comment.dislikes.filter((id) => id.toString() !== userId);
+    await comment.save();
+    res.json(comment);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to like comment" });
+  }
+};
+
+exports.dislikeComment = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    const userId = req.session.user.id;
+    if (!comment.dislikes.includes(userId)) comment.dislikes.push(userId);
+    comment.likes = comment.likes.filter((id) => id.toString() !== userId);
+    await comment.save();
+    res.json(comment);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to dislike comment" });
+  }
+};
