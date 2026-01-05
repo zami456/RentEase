@@ -14,3 +14,17 @@ exports.createComment = async (req, res) => {
     res.status(500).json({ error: "Failed to create comment" });
   }
 };
+
+exports.getCommentsByProperty = async (req, res) => {
+  try {
+    const comments = await Comment.find({ propertyId: req.params.propertyId })
+      .populate("author", "username")
+      .populate("replies.author", "username")
+      .sort({ createdAt: -1 });
+    res.json(comments);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch comments" });
+  }
+};
+
+
