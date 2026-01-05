@@ -12,7 +12,7 @@ import Profile from "./pages/Profile";
 import TenantDashboard from "./pages/TenantDashboard";
 import PropertyDetails from "./pages/PropertyDetails";
 import OwnerDashboard from "./pages/OwnerDashboard";
-
+import Payment from "./pages/Payment";
 
 function AppRoutes({ user, setUser }) {
   const location = useLocation();
@@ -30,6 +30,7 @@ function AppRoutes({ user, setUser }) {
           <Route path="/tenant-dashboard" element={<TenantDashboard user={user} />} />
           <Route path="/property/:id" element={<PropertyDetails user={user} />} />
           <Route path="/owner-dashboard/*" element={<OwnerDashboard user={user} />} />
+          <Route path="/payment" element={<Payment user={user} />} />
           {/* Add other routes here */}
   
         </Routes>

@@ -14,6 +14,7 @@ const propertyRoutes = require("./routes/propertyRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
 const profileRoutes = require("./routes/profile");
+const rentalRequestRoutes = require("./routes/rentalRequestRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 
 const fs = require("fs");
@@ -72,6 +73,7 @@ app.use("/api/properties", propertyRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/rental-requests", rentalRequestRoutes);
 app.use("/api/comments", commentRoutes);
 
 
