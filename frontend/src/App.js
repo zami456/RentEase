@@ -8,6 +8,9 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import TenantDashboard from "./pages/TenantDashboard";
+
 
 function AppRoutes({ user, setUser }) {
   const location = useLocation();
@@ -21,6 +24,8 @@ function AppRoutes({ user, setUser }) {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile user={user} />} />
+          <Route path="/tenant-dashboard" element={<TenantDashboard user={user} />} />
           {/* Add other routes here */}
   
         </Routes>
