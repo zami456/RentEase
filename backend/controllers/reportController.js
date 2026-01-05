@@ -22,3 +22,12 @@ exports.createReport = async (req, res) => {
       res.status(500).json({ error: "Failed to submit report" });
     }
   };
+
+  exports.getReports = async (req, res) => {
+  try {
+    const reports = await Report.find().populate("reportedBy").populate("propertyId");
+    res.status(200).json(reports);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch reports" });
+  }
+};
