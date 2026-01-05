@@ -74,3 +74,15 @@ exports.editComment = async (req, res) => {
     res.status(500).json({ error: "Failed to edit comment" });
   }
 };
+
+exports.deleteComment = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (comment.author.toString() !== req.session.user.id)
+      return res.status(403).json({ error: "Unauthorized" });
+    await comment.deleteOne();
+    res.json({ message: "Comment deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete comment" });
+  }
+};
