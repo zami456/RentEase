@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import TenantDashboard from "./pages/TenantDashboard";
+import ReportForm from "./pages/ReportForm";
+
 import PropertyDetails from "./pages/PropertyDetails";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import Payment from "./pages/Payment";
@@ -29,6 +31,7 @@ function AppRoutes({ user, setUser }) {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile user={user} />} />
           <Route path="/tenant-dashboard" element={<TenantDashboard user={user} />} />
+          <Route path="/report/:id" element={<ReportForm />} />
           <Route path="/property/:id" element={<PropertyDetails user={user} />} />
           <Route path="/owner-dashboard/*" element={<OwnerDashboard user={user} />} />
           <Route path="/payment" element={<Payment user={user} />} />
