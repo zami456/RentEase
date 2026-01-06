@@ -17,6 +17,7 @@ import PropertyDetails from "./pages/PropertyDetails";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import Payment from "./pages/Payment";
 import AdminDashboard from "./components/AdminDashboard";
+import Mapview from "./pages/mapview";
 
 function AppRoutes({ user, setUser }) {
   const location = useLocation();
@@ -38,6 +39,7 @@ function AppRoutes({ user, setUser }) {
           <Route path="/owner-dashboard/*" element={<OwnerDashboard user={user} />} />
           <Route path="/payment" element={<Payment user={user} />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
+          <Route path="/mapview" element={<Mapview />} />
           {/* Add other routes here */}
   
         </Routes>
