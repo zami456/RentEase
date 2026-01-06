@@ -9,6 +9,8 @@ const propertySchema = new mongoose.Schema({
   washrooms: { type: Number, required: true },
   squareFeet: { type: Number, required: true },
   price: { type: Number, required: true },
+  latitude: { type: Number },
+  longitude: { type: Number },
   mainImage: { type: String, required: true },
   roomImages: [{type: String}],
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
