@@ -20,6 +20,9 @@ router.post("/flat-requests/:id", propertyController.updateRentalRequest);
 // GET all properties for tenant homepage
 router.get("/all", propertyController.getAllProperties);
 
+// POST endpoint to find best property based on POIs
+router.post("/best", propertyController.getBestProperty);
+
 // Search & filter endpoint for tenants (public)
 router.get("/search", propertyController.searchProperties);
 
