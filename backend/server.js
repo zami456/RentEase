@@ -16,6 +16,7 @@ const wishlistRoutes = require("./routes/wishlistRoutes");
 const profileRoutes = require("./routes/profile");
 const rentalRequestRoutes = require("./routes/rentalRequestRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const fs = require("fs");
 const path = require("path");
@@ -75,6 +76,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/rental-requests", rentalRequestRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 // Connect to MongoDB and start the server
