@@ -5,6 +5,7 @@ const Notification = require("../models/Notification");
 const multer = require("multer");
 const path = require("path");
 const cloudinary = require("cloudinary").v2;
+const { findBestProperty } = require("../services/propertySelectionService");
 
 // Configure Cloudinary using environment variables
 // Required: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
@@ -71,7 +72,9 @@ exports.createAdvertisement = async (req, res) => {
       washrooms,
       squareFeet,
       description,
-      price,      
+      price,
+      latitude,
+      longitude,
     } = req.body;
 
     // Safely handle req.files (multer)
@@ -110,7 +113,9 @@ exports.createAdvertisement = async (req, res) => {
       washrooms,
       squareFeet,
       description,
-      price,     
+      price,
+      latitude,
+      longitude,
       mainImage,
       roomImages: uniqueRoomImages,
       owner: ownerId,
@@ -214,6 +219,23 @@ exports.getAllProperties = async (req, res) => {
     res.status(200).json({ properties });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch properties" });
+  }
+};
+
+// PUBLIC: Select best property based on POIs (array of lat/lon)
+exports.getBestProperty = async (req, res) => {
+  try {
+    console.log("getBestProperty called", req.body);
+    const { pois = [], filters = {}, limit, weights = [] } = req.body || {};
+    if (!Array.isArray(pois) || pois.length === 0) {
+      return res.status(400).json({ error: "Provide an array of POIs" });
+    }
+    const result = await findBestProperty({ pois, filters, limit, weights });
+    console.log("Result:", result);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("getBestProperty error:", error);
+    res.status(500).json({ error: "Failed to compute best property", details: error.message });
   }
 };
 
