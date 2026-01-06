@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import TenantDashboard from "./pages/TenantDashboard";
+import Report from "./pages/ReportForm";
+import ReportForm from "./pages/ReportForm";
 
 
 function AppRoutes({ user, setUser }) {
@@ -26,6 +28,7 @@ function AppRoutes({ user, setUser }) {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile user={user} />} />
           <Route path="/tenant-dashboard" element={<TenantDashboard user={user} />} />
+          <Route path="/report/:id" element={<ReportForm />} />
           {/* Add other routes here */}
   
         </Routes>
