@@ -10,7 +10,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import TenantDashboard from "./pages/TenantDashboard";
-import Report from "./pages/ReportForm";
 import ReportForm from "./pages/ReportForm";
 
 
