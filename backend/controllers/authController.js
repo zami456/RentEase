@@ -8,8 +8,7 @@ exports.register = async (req, res) => {
   try {
     const hashed = await bcrypt.hash(password, 10);
     // Create a new user including the role
-    const user = new User({ username, email, password: hashed, role });
-    await user.save();
+    const user = await User.repo.create({ username, email, password: hashed, role });
     res.status(201).json({ msg: "User registered" });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -19,7 +18,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.repo.findOneByEmail(email);
     if (!user) return res.status(400).json({ error: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);

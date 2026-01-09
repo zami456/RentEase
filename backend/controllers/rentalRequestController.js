@@ -4,8 +4,7 @@ const Property = require("../models/Property");
 // Create a new rental request
 exports.createRentalRequest = async (req, res) => {
   try {
-    const rentalRequest = new RentalRequest(req.body);
-    await rentalRequest.save();
+    const rentalRequest = await RentalRequest.repo.create(req.body);
     res.status(201).json(rentalRequest);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -18,10 +17,7 @@ exports.updateRentalRequest = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const rentalRequest = await RentalRequest.findByIdAndUpdate(id, updates, {
-      new: true,
-      runValidators: true,
-    });
+    const rentalRequest = await RentalRequest.repo.updateById(id, updates);
 
     if (!rentalRequest) {
       return res.status(404).json({ message: "Rental request not found" });
@@ -37,7 +33,7 @@ exports.updateRentalRequest = async (req, res) => {
 exports.deleteRentalRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    const rentalRequest = await RentalRequest.findByIdAndDelete(id);
+    const rentalRequest = await RentalRequest.repo.deleteById(id);
     if (!rentalRequest) {
       return res.status(404).json({ error: "Rental request not found" });
     }
@@ -55,16 +51,11 @@ exports.getAllRentalRequests = async (req, res) => {
     if (!ownerId) return res.status(401).json({ error: "Unauthorized" });
 
     // Find property IDs owned by this user
-    const ownedProps = await Property.find({ owner: ownerId }, "_id");
+    const ownedProps = await Property.repo.findByOwner(ownerId);
     const propIds = ownedProps.map((p) => p._id);
 
     // Fetch only pending requests for those properties
-    const requests = await RentalRequest.find({
-      property: { $in: propIds },
-      status: "pending",
-    })
-      .populate("property")
-      .populate("tenant", "username email phone");
+    const requests = await RentalRequest.repo.findPendingByPropertyIds(propIds);
 
     res.status(200).json(requests);
   } catch (err) {
@@ -81,11 +72,7 @@ exports.getUserRentalRequest = async (req, res) => {
     if (!tenantId) return res.status(401).json({ error: "Unauthorized" });
 
     // Fetch all rental requests for the tenant
-    const requests = await RentalRequest.find({ tenant: tenantId }).populate({
-      path: "property",
-      populate: { path: "owner", select: "username email phone" },
-      select: "houseName address owner",
-    });
+    const requests = await RentalRequest.repo.findForTenant(tenantId);
 
     res.status(200).json(requests);
   } catch (err) {

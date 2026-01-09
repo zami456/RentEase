@@ -48,4 +48,34 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("User", userSchema);
+const UserModel = mongoose.model("User", userSchema);
+
+// Wrapper API to keep controllers database-agnostic
+UserModel.repo = {
+  create(data) {
+    return UserModel.create(data);
+  },
+  findBasicUsers() {
+    return UserModel.find({}, "username email role");
+  },
+  findOneByEmail(email) {
+    return UserModel.findOne({ email });
+  },
+  findAllSorted(sort = { createdAt: -1 }) {
+    return UserModel.find({}).sort(sort);
+  },
+  findById(id) {
+    return UserModel.findById(id);
+  },
+  deleteById(id) {
+    return UserModel.findByIdAndDelete(id);
+  },
+  updateById(id, update) {
+    return UserModel.findOneAndUpdate({ _id: id }, update, { new: true });
+  },
+  isValidId(id) {
+    return mongoose.Types.ObjectId.isValid(id);
+  },
+};
+
+module.exports = UserModel;

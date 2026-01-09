@@ -5,12 +5,10 @@ exports.addToWishlist = async (req, res) => {
   try {
     const { userId, propertyId } = req.body;
 
-    const wishlistItem = new Wishlist({
+    const wishlistItem = await Wishlist.repo.create({
       user: userId,
       property: propertyId,
     });
-
-    await wishlistItem.save();
     res
       .status(201)
       .json({ message: "Property added to wishlist", wishlistItem });
@@ -26,7 +24,7 @@ exports.getWishlist = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const wishlist = await Wishlist.find({ user: userId }).populate("property");
+    const wishlist = await Wishlist.repo.findByUser(userId);
     res.status(200).json(wishlist);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch wishlist", error });
@@ -38,7 +36,7 @@ exports.removeFromWishlist = async (req, res) => {
   try {
     const { wishlistId } = req.params;
 
-    await Wishlist.findByIdAndDelete(wishlistId);
+    await Wishlist.repo.deleteById(wishlistId);
     res.status(200).json({ message: "Property removed from wishlist" });
   } catch (error) {
     res
