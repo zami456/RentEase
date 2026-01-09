@@ -18,4 +18,37 @@ const propertySchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Property", propertySchema);
+const PropertyModel = mongoose.model("Property", propertySchema);
+
+// Wrapper API for DB-agnostic controller usage
+PropertyModel.repo = {
+  create(data) {
+    return PropertyModel.create(data);
+  },
+  findByOwner(ownerId) {
+    return PropertyModel.find({ owner: ownerId });
+  },
+  findAll() {
+    return PropertyModel.find({});
+  },
+  findWithFilter(filter = {}) {
+    return PropertyModel.find(filter);
+  },
+  findById(id) {
+    return PropertyModel.findById(id);
+  },
+  findByIdWithOwner(id) {
+    return PropertyModel.findById(id).populate("owner", "username email phone");
+  },
+  deleteById(id) {
+    return PropertyModel.findByIdAndDelete(id);
+  },
+  search({ address, rooms }) {
+    const filter = {};
+    if (address) filter.address = { $regex: address, $options: "i" };
+    if (rooms) filter.rooms = Number(rooms);
+    return PropertyModel.find(filter);
+  },
+};
+
+module.exports = PropertyModel;

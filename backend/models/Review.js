@@ -22,4 +22,18 @@ const reviewSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model("Review", reviewSchema);
+const ReviewModel = mongoose.model("Review", reviewSchema);
+
+ReviewModel.repo = {
+  create(data) {
+    return ReviewModel.create(data);
+  },
+  findOne(filter) {
+    return ReviewModel.findOne(filter);
+  },
+  findByPropertyWithUser(propertyId) {
+    return ReviewModel.find({ propertyId }).populate("userId", "username");
+  },
+};
+
+module.exports = ReviewModel;

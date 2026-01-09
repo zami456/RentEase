@@ -5,7 +5,7 @@ const Report = require("../models/Report");
 // Get all users (tenants and owners)
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "username email role");
+    const users = await User.repo.findBasicUsers();
     res.json({ users });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch users" });
@@ -15,9 +15,7 @@ exports.getAllUsers = async (req, res) => {
 // Get all reports
 exports.getAllReports = async (req, res) => {
   try {
-    const reports = await Report.find()
-      .populate("reportedBy", "username role")  // Ensure the correct field is populated
-      .populate("propertyId", "houseName"); // Add this if you want to populate the property name
+    const reports = await Report.repo.findAllWithRelations();
 
     // Log the reports to verify
     console.log("Reports:", reports);
@@ -35,7 +33,7 @@ exports.getAllReports = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    await User.findByIdAndDelete(id);
+    await User.repo.deleteById(id);
     res.json({ message: "User deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: "Failed to delete user" });

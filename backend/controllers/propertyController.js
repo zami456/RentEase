@@ -105,7 +105,7 @@ exports.createAdvertisement = async (req, res) => {
     const uniqueRoomImages = Array.from(new Set(roomImages));
 
 
-    const property = new Property({
+    const property = await Property.repo.create({
       houseName,
       address,
       contact,
@@ -120,7 +120,6 @@ exports.createAdvertisement = async (req, res) => {
       roomImages: uniqueRoomImages,
       owner: ownerId,
     });
-    await property.save();
     res.status(201).json({ message: "Advertisement created", property });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -141,12 +140,7 @@ exports.getRentalRequests = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
     // Find requests for properties that belong to the owner
-    const requests = await RentalRequest.find()
-      .populate({
-        path: "property",
-        match: { owner: ownerId },
-      })
-      .populate("tenant", "name email");
+    const requests = await RentalRequest.repo.findForOwner(ownerId);
     const filteredRequests = requests.filter((r) => r.property);
     res.json({ requests: filteredRequests });
   } catch (err) {
@@ -171,22 +165,21 @@ exports.updateRentalRequest = async (req, res) => {
     } else {
       return res.status(400).json({ error: "Invalid action" });
     }
-    const request = await RentalRequest.findById(id).populate("tenant");
+    const request = await RentalRequest.repo.findByIdWithTenant(id);
     if (!request) return res.status(404).json({ error: "Rental request not found" });
 
-    const property = await Property.findById(request.property);
+    const property = await Property.repo.findById(request.property);
     if (property.owner.toString() !== ownerId) {
       return res.status(403).json({ error: "Not authorized to update this request" });
     }
     request.status = status;
-    await request.save();
+    await RentalRequest.repo.updateById(request._id, { status });
 
     // Create a notification for the tenant
-    const notification = new Notification({
+    await Notification.repo.create({
       tenant: request.tenant._id,
       message: `Your request for property "${property.houseName}" has been ${status}.`,
     });
-    await notification.save();
 
     res.json({ message: `Rental request ${status}`, request });
   } catch (err) {
@@ -204,7 +197,7 @@ exports.getProperties = async (req, res) => {
     if (!ownerId) {
       return res.status(401).json({ error: "Unauthorized" });
     }
-    const properties = await Property.find({ owner: ownerId });
+    const properties = await Property.repo.findByOwner(ownerId);
     res.json({ properties });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -215,7 +208,7 @@ exports.getProperties = async (req, res) => {
 // PUBLIC: Fetch all properties for homepage
 exports.getAllProperties = async (req, res) => {
   try {
-    const properties = await Property.find({});
+    const properties = await Property.repo.findAll();
     res.status(200).json({ properties });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch properties" });
@@ -243,20 +236,7 @@ exports.getBestProperty = async (req, res) => {
 exports.searchProperties = async (req, res) => {
   try {
     const { address, rooms } = req.query;
-
-    const filter = {};
-
-    // If address is provided, use case-insensitive regex match
-    if (address) {
-      filter.address = { $regex: address, $options: "i" };
-    }
-
-    // If rooms is provided, filter by number of rooms
-    if (rooms) {
-      filter.rooms = parseInt(rooms); // Make sure it's a number
-    }
-
-    const properties = await Property.find(filter);
+    const properties = await Property.repo.search({ address, rooms });
     res.json({ properties });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -267,8 +247,7 @@ exports.searchProperties = async (req, res) => {
 // Add this function to handle fetching a property by ID
 exports.getPropertyById = async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id)
-      .populate("owner", "username email phone") // Populate owner details
+    const property = await Property.repo.findByIdWithOwner(req.params.id);
 
     if (!property) {
       return res.status(404).json({ error: "Property not found" });
@@ -291,7 +270,7 @@ exports.deleteProperty = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
     const { id } = req.params;
-    const property = await Property.findById(id);
+    const property = await Property.repo.findById(id);
     if (!property) return res.status(404).json({ error: "Property not found" });
     if (property.owner.toString() !== ownerId) {
       return res.status(403).json({ error: "Not authorized to delete this property" });
@@ -316,7 +295,7 @@ exports.deleteProperty = async (req, res) => {
       );
     }
 
-    await property.deleteOne();
+    await Property.repo.deleteById(id);
     res.json({ message: "Property deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: "Failed to delete property" });

@@ -8,13 +8,11 @@ exports.createReport = async (req, res) => {
         return res.status(401).json({ error: "Unauthorized. Please login." });
       }
   
-      const report = new Report({
+      await Report.repo.create({
         reportedBy: req.session.user.id,
         propertyId,
         description,
       });
-  
-      await report.save();
       res.status(201).json({ message: "Report submitted successfully" });
   
     } catch (err) {
@@ -25,7 +23,7 @@ exports.createReport = async (req, res) => {
 
   exports.getReports = async (req, res) => {
   try {
-    const reports = await Report.find().populate("reportedBy").populate("propertyId");
+    const reports = await Report.repo.findAllWithRelations();
     res.status(200).json(reports);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch reports" });

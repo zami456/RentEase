@@ -7,4 +7,18 @@ const reportSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Report", reportSchema);
+const ReportModel = mongoose.model("Report", reportSchema);
+
+ReportModel.repo = {
+  create(data) {
+    const report = new ReportModel(data);
+    return report.save();
+  },
+  findAllWithRelations() {
+    return ReportModel.find()
+      .populate("reportedBy")
+      .populate("propertyId");
+  },
+};
+
+module.exports = ReportModel;

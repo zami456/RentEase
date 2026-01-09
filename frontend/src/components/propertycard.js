@@ -28,15 +28,17 @@ const PropertyCard = ({ property }) => {
   }, []);
 
   return (
-    <div className="bg-white border border-blue-100 rounded-2xl shadow-sm hover:shadow-lg transition-shadow max-w-md mx-auto relative flex flex-col">
+    <div className="bg-white border border-blue-100 rounded-2xl shadow-sm hover:shadow-lg transition-shadow w-full relative flex flex-col h-full">
       {/* Property Image and Link to Details */}
-      <Link to={`/property/${property._id}`} className="block">
-        <img
-          src={property.mainImage?.startsWith("http") ? property.mainImage : `https://tenantsync-backend.onrender.com${property.mainImage}`}
-          alt="Flat"
-          className="w-full h-48 object-cover rounded-t-2xl bg-blue-100"
-        />
-        <div className="p-4">
+      <Link to={`/property/${property._id}`} className="block flex flex-col h-full">
+        <div className="h-48 w-full overflow-hidden rounded-t-2xl bg-blue-100 flex-shrink-0">
+          <img
+            src={property.mainImage?.startsWith("http") ? property.mainImage : `https://tenantsync-backend.onrender.com${property.mainImage}`}
+            alt="Flat"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="p-4 flex flex-col flex-grow">
           <h2 className="text-lg font-bold text-blue-900 mb-1 truncate">
             {property.houseName}
           </h2>
@@ -44,7 +46,7 @@ const PropertyCard = ({ property }) => {
             {property.address}
           </p>
           {/* Room and Rent Information */}
-          <div className="flex justify-between items-center mt-2">
+          <div className="flex justify-between items-center mt-auto">
             <span className="text-xs text-blue-400">
               Rooms: {property.rooms}
             </span>
