@@ -18,15 +18,12 @@ const Map = ({ properties = [], onPoisChange, pois = [], poiMode = false }) => {
     const initializeMap = () => {
       if (!window.L) {
         console.error("Leaflet library not loaded yet");
-        // Retry after 500ms
-        setTimeout(initializeMap, 500);
-        return;
+        return false;
       }
 
       if (!mapRef.current) {
-        console.error("Map container not found; retrying");
-        setTimeout(initializeMap, 200);
-        return;
+        console.error("Map container not found");
+        return false;
       }
 
       // Check if map is already initialized
@@ -34,7 +31,7 @@ const Map = ({ properties = [], onPoisChange, pois = [], poiMode = false }) => {
         console.log("Map already initialized");
         // Ensure markers render when map exists
         renderPropertyMarkers();
-        return;
+        return true;
       }
 
       try {
@@ -44,6 +41,12 @@ const Map = ({ properties = [], onPoisChange, pois = [], poiMode = false }) => {
             (position) => {
               // Check again if map already exists (async callback)
               if (mapInstanceRef.current) {
+                return;
+              }
+
+              // Triple check the ref still exists
+              if (!mapRef.current || !window.L) {
+                console.error("Map container lost during geolocation");
                 return;
               }
 
@@ -93,6 +96,12 @@ const Map = ({ properties = [], onPoisChange, pois = [], poiMode = false }) => {
     const initializeMapWithDefault = () => {
       // Check if map already exists
       if (mapInstanceRef.current) {
+        return;
+      }
+
+      // Verify container still exists
+      if (!mapRef.current || !window.L) {
+        console.error("Cannot initialize map - missing container or Leaflet");
         return;
       }
 
@@ -212,26 +221,48 @@ const Map = ({ properties = [], onPoisChange, pois = [], poiMode = false }) => {
       }
     };
 
-    // Initialize map
-    let pendingRetry;
+    // Initialize map with retry mechanism
+    let retryCount = 0;
+    const maxRetries = 20; // 20 * 100ms = 2 seconds max wait
+    let retryTimer;
+    let mounted = true;
+    
     const start = () => {
-      if (!mapRef.current) {
-        pendingRetry = setTimeout(start, 50); // wait for DOM node to attach
+      if (!mounted) return; // Component unmounted
+      
+      if (!mapRef.current || !window.L) {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          retryTimer = setTimeout(start, 100);
+        } else {
+          console.error("Failed to initialize map after retries");
+        }
         return;
       }
-      initializeMap();
+      
+      const result = initializeMap();
+      if (!result && retryCount < maxRetries) {
+        // initializeMap failed, retry
+        retryCount++;
+        retryTimer = setTimeout(start, 100);
+      }
     };
 
     start();
 
     // Cleanup on unmount
     return () => {
-      if (pendingRetry) {
-        clearTimeout(pendingRetry);
+      mounted = false;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
       }
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.off('click');
-        mapInstanceRef.current.remove();
+        try {
+          mapInstanceRef.current.off('click');
+          mapInstanceRef.current.remove();
+        } catch (e) {
+          console.error("Error cleaning up map:", e);
+        }
         mapInstanceRef.current = null;
       }
       delete window.removePoi;
